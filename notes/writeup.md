@@ -17,7 +17,10 @@ We ask three questions:
    when the noise appears only at test time?
 
 Before the full results were seen, we wrote down numerical predictions for question 3
-([`predictions.md`](predictions.md), committed to git before the results existed).
+([`predictions.md`](predictions.md), written 19:05–19:15 IST on 2026-10-28). Honest timing note: the
+file was first committed to git at 20:18 IST, when a partial classic-model run already existed;
+its content was not changed after 19:15. It is therefore a written-in-advance plan, not a formal
+pre-registration (a public, time-stamped plan made before any data is collected).
 
 ## 2. Data
 
@@ -96,7 +99,7 @@ Wine is hard for every model: the best balanced accuracy is 0.37, at n = 1000 wi
 
 ![Wine coverage runs vs theory](../results/figures/wine_coverage_runs_vs_theory.png)
 
-How the pre-registered predictions ([`predictions.md`](predictions.md)) turned out:
+How the predictions written in advance ([`predictions.md`](predictions.md)) turned out:
 
 | Prediction | Outcome |
 |---|---|
@@ -141,7 +144,7 @@ Each ingredient is established:
 - Distribution shift breaks the guarantee (Tibshirani et al., 2019).
 
 What this project adds is modest, and should be described that way:
-1. a **pre-registered empirical check** of the finite-sample coverage theory on real, small,
+1. an **empirical check, with predictions written in advance,** of the finite-sample coverage theory on real, small,
    noisy tables across four model families, including a worked example of how too few
    repeats, plus correlated repeats, can fake a deviation from theory
 2. evidence that, under **test-time input noise**, conformal robustness is **model- and

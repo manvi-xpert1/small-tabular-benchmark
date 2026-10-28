@@ -38,7 +38,7 @@ It asks two questions:
 ![Wine accuracy vs sample size](results/figures/wine_accuracy_vs_n.png)
 ![Adult coverage vs noise](results/figures/adult_coverage_vs_noise.png)
 
-Predictions were written down before the results ([`notes/predictions.md`](notes/predictions.md));
+Predictions were written down before the full results were seen ([`notes/predictions.md`](notes/predictions.md));
 the write-up reports which held and which did not.
 
 ## Datasets (real, public)
@@ -142,7 +142,7 @@ All commands from the project folder.
 | `src/report.py` | summary tables (CSV + Markdown) and plots |
 | `src/coverage_theory.py` | compares measured conformal coverage with the Beta-distribution theory (see `notes/predictions.md`) |
 | `tests/test_pipeline.py` | checks the pieces work (synthetic, TEST-ONLY data) |
-| `notes/predictions.md` | coverage predictions written before the results |
+| `notes/predictions.md` | coverage predictions written before the full results were seen |
 | `notes/writeup.md` | full write-up: method, results, limitations, references |
 
 ## TabPFN licence note
