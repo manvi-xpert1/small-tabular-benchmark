@@ -1,0 +1,11 @@
+# Packages for this project, with exact versions so results can be reproduced.
+# Checked on 2026-10-28 to install together on Windows + Python 3.12 and on Linux (Colab).
+# TabPFN also pulls in PyTorch (the deep-learning library it runs on).
+
+tabpfn==9.2.0        # pre-trained model for small tables
+torch==2.14.1        # deep-learning library TabPFN needs
+numpy==2.5.4         # fast arrays and maths
+pandas==3.1.0        # tables (DataFrames) for loading and cleaning data
+scikit-learn==1.9.1  # logistic regression, random forest, gradient boosting, metrics
+matplotlib==3.11.2   # plots
+pytest==9.2.0        # runs the quick checks in tests/

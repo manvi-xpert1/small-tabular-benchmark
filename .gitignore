@@ -1,0 +1,22 @@
+# Files git should NOT track
+
+# Virtual environment (each person builds their own from requirements.txt)
+.venv/
+
+# Raw data: downloaded by each person, not shared through the repo
+data/*
+!data/README.md
+
+# Python cache files (created automatically, not useful to store)
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Downloaded zip archives (the unzipped files live in data/)
+*.zip
+
+# Notebook autosave files
+.ipynb_checkpoints/
+
+# Secrets (e.g. a TabPFN login token) must never be committed
+.env
