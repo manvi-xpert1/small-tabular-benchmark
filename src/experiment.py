@@ -162,7 +162,8 @@ def run(datasets, models, sizes, repeats, noise_levels, out_path):
                     table.to_csv(out_path, mode="a", index=False,
                                               header=not out_path.exists())
                     print(f"  {ds_name} n={n:<5} rep={rep:<3} {model_name:<20} "
-                          f"acc(clean)={rows[0]['accuracy']:.3f}  {seconds:.1f}s")
+                          f"acc(clean)={rows[0]['accuracy']:.3f}  {seconds:.1f}s",
+                          flush=True)  # flush = show the line immediately
 
 
 def main():
@@ -172,6 +173,15 @@ def main():
     parser.add_argument("--quick", action="store_true",
                         help="tiny run to check everything works")
     parser.add_argument("--out", default=None, help="output CSV path")
+    # Optional overrides, e.g. to run a smaller TabPFN design when time is short.
+    # Seeds depend only on (dataset, n, repeat, noise level), so a smaller run gives
+    # exactly the same rows as the matching part of the full run.
+    parser.add_argument("--sizes", nargs="+", type=int, default=None,
+                        help="sample sizes to run, e.g. --sizes 50 100 250")
+    parser.add_argument("--repeats", type=int, default=None,
+                        help="number of repeats per sample size, e.g. --repeats 10")
+    parser.add_argument("--noise-levels", nargs="+", type=float, default=None,
+                        help="noise levels, must include 0, e.g. --noise-levels 0 0.25")
     args = parser.parse_args()
 
     if args.quick:
@@ -182,6 +192,13 @@ def main():
         sizes, repeats, levels = (config.SAMPLE_SIZES, config.N_REPEATS,
                                   config.NOISE_LEVELS)
         default_name = "raw_results.csv"
+
+    if args.sizes is not None:
+        sizes = args.sizes
+    if args.repeats is not None:
+        repeats = args.repeats
+    if args.noise_levels is not None:
+        levels = args.noise_levels
 
     out_path = config.TABLES_DIR / default_name if args.out is None else args.out
     run(args.datasets, args.models, sizes, repeats, levels, Path(out_path))

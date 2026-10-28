@@ -16,8 +16,8 @@ A running record of choices made and why, so they can be explained later.
   - Google Colab (free GPU) = full experiment runs, because TabPFN is a neural network
     and is slow on a CPU. TabPFN's docs say CPU is only practical up to ~5,000 training rows.
 - **TabPFN licence and access:** code is Apache-2.0; default model weights (TabPFN-3.5)
-  are non-commercial and **gated on Hugging Face** (you must accept terms and use a
-  read token). Fine for this non-commercial research. The token must never be committed.
+  are non-commercial and **gated**: you need Hugging Face access (read token) AND a
+  Prior Labs API key with the TabPFN-3.5 licence accepted. Fine for this non-commercial research. The token must never be committed.
 
 ## 2026-10-28 — Data decisions
 
@@ -48,6 +48,15 @@ A running record of choices made and why, so they can be explained later.
   class" score.
 - All models use default settings (no tuning), for fairness and simplicity.
 - Every model sees the same samples and the same noise in each repeat.
+
+## 2026-10-28 — Setup problems hit (and fixes)
+
+- PowerShell blocks `.venv\Scripts\activate` -> call `.venv\Scripts\python` directly.
+- `pip` without the venv path used global Python 3.15 -> no PyTorch build -> install failed.
+- PyTorch `WinError 126` (shm.dll) -> missing Microsoft Visual C++ Redistributable; installed it.
+- TabPFN needs a Prior Labs API key as well as Hugging Face access. Its browser login
+  crashes on Windows (`WinError 10038`: Python's `select` only works on network sockets
+  on Windows) -> set `TABPFN_TOKEN` and `TABPFN_NO_BROWSER=1` instead.
 
 ## Early observations from the quick check (NOT results)
 

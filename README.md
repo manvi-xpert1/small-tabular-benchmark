@@ -1,6 +1,6 @@
 # Small, Noisy Tabular Data: A Benchmark of TabPFN vs Classic Models
 
-**Status:** code written and tested on the classic models; full experiment not yet run. No results yet.
+**Status:** experiment runs in progress (classic models locally, TabPFN on Colab). Results and write-up to follow.
 
 ## What this project does
 
@@ -41,49 +41,68 @@ colab/             notebook for running the full experiment on a Colab GPU
 
 ## Setup on Windows (laptop)
 
-This project uses **Python 3.12** (TabPFN's dependency PyTorch does not yet have
-stable Windows builds for Python 3.15).
+Needs: Python 3.12 (`py install 3.12`), git, and the Microsoft Visual C++
+Redistributable (https://aka.ms/vs/17/release/vc_redist.x64.exe), a system component
+PyTorch needs on Windows.
 
-Open Command Prompt in the project folder and run:
+In PowerShell or Command Prompt, from the project folder:
 
 ```
 py -V:3.12 -m venv .venv
-.venv\Scripts\activate
-python -m pip install --upgrade pip
-pip install -r requirements.txt
+.venv\Scripts\python -m pip install -r requirements.txt
 ```
 
 - Line 1 creates a **virtual environment** (a private copy of Python just for this project) in `.venv`.
-- Line 2 **activates** it (your prompt will start with `(.venv)`). Do this every time you open a new terminal.
-- Lines 3–4 install the packages listed in `requirements.txt`.
+- Line 2 installs the packages listed in `requirements.txt` into it (about 1 GB; the last
+  "Installing collected packages" step can sit silent for 10+ minutes on Windows).
+- We call `.venv\Scripts\python` directly instead of "activating" the environment,
+  because PowerShell blocks the activation script by default.
 
 ## TabPFN access (one-time)
 
-TabPFN's model weights are hosted on Hugging Face (a site for sharing AI models) behind
-a terms-of-use page:
+TabPFN needs **two** permissions before it can download its model weights:
 
-1. Make a free account at https://huggingface.co and accept the terms at
-   https://huggingface.co/Prior-Labs/tabpfn_3_5
-2. Create a **read** token (a personal access key) under Settings → Access Tokens.
-3. Laptop: with the virtual environment active, run `hf auth login` and paste the token.
-   Colab: store it as a Colab secret named `HF_TOKEN` (see the notebook).
+1. **Hugging Face** (the site hosting the files): make a free account, accept the terms at
+   https://huggingface.co/Prior-Labs/tabpfn_3_5, and create a **read** token under
+   Settings → Access Tokens. Laptop: run `.venv\Scripts\hf auth login`.
+2. **Prior Labs** (TabPFN's makers): accept the TabPFN-3.5 licence at
+   https://platform.priorlabs.ai/account/licenses and create an **API key** at
+   https://platform.priorlabs.ai/account/api-keys.
 
-Never paste the token into code or commit it to git.
+On Windows, TabPFN's automatic browser login crashes (`WinError 10038`), so give it the
+key directly. In PowerShell, for the current window only:
+
+```
+$env:TABPFN_TOKEN = "your-api-key"
+$env:TABPFN_NO_BROWSER = "1"
+```
+
+After one successful run, TabPFN caches the key in `%USERPROFILE%\.cache\tabpfn\`
+(outside this project), so later runs don't need it.
+Colab: store both keys as Colab secrets `HF_TOKEN` and `TABPFN_TOKEN` (see the notebook).
+
+Never paste keys into code or commit them to git.
 
 ## How to run
 
-All commands from the project folder, with the virtual environment active.
+All commands from the project folder.
 
 ```
-python -m pytest tests -q                      # quick checks (synthetic TEST-ONLY data)
-python -m src.experiment --quick               # tiny real-data run (~1 min without TabPFN)
-python -m src.experiment --quick --models logistic_regression random_forest gradient_boosting
-python -m src.report --raw results/tables/raw_results_quick.csv --tag quick
+.venv\Scripts\python -m pytest tests -q        # quick checks (synthetic TEST-ONLY data)
+.venv\Scripts\python -m src.experiment --models logistic_regression random_forest gradient_boosting
+.venv\Scripts\python -m src.report               # summary tables + plots
+.venv\Scripts\python -m src.coverage_theory      # measured coverage vs theory
 ```
 
-The **full** experiment (5 sample sizes x 20 repeats x 4 noise levels x 4 models x
-2 datasets) should be run on Colab: open `colab/run_experiments.ipynb` in Colab and
-run the cells in order.
+- The three **classic models** run on a normal computer (the full run takes under an hour).
+  Results: `results/tables/raw_results.csv`.
+- **TabPFN** needs a GPU (graphics card), so it runs on Google Colab:
+  open `colab/run_experiments.ipynb` in Colab and run the cells top to bottom.
+  Results: `results/tables/raw_results_tabpfn.csv` (download it into `results/tables/`).
+- `src.coverage_theory` combines both files automatically.
+- Optional, to run a smaller design: `--sizes 50 100 250 --repeats 10 --noise-levels 0 0.25`.
+  Seeds depend only on (dataset, n, repeat, noise level), so a smaller run gives exactly
+  the same numbers as the matching part of the full run.
 
 ## Code map
 
@@ -97,6 +116,7 @@ run the cells in order.
 | `src/conformal.py` | split conformal prediction sets, coverage, set size |
 | `src/experiment.py` | main loop; saves results after every model, resumes after a crash |
 | `src/report.py` | summary tables (CSV + Markdown) and plots |
+| `src/coverage_theory.py` | compares measured conformal coverage with the Beta-distribution theory (see `notes/predictions.md`) |
 | `tests/test_pipeline.py` | checks the pieces work (synthetic, TEST-ONLY data) |
 
 ## TabPFN licence note
