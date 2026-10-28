@@ -66,6 +66,16 @@ These come from 2 repeats only, without TabPFN. They are just sanity checks:
   that size. Balanced accuracy will show this clearly.
 - Wine is hard: accuracy is only around 0.43-0.49 at n <= 250 for the classic models.
 
+## 2026-10-28 — Runs and checks
+
+- Classic models: full run on a cloud workspace (CPU). TabPFN: full run on Colab T4 GPU
+  (`raw_results_tabpfn.csv`). Seeds make both identical to what any machine would produce.
+- Follow-up check: logistic regression, n = 250 and 1000, **200 repeats**
+  (`results/tables/check_lr_200_repeats.csv`). Spread matches theory (ratio 0.86-0.99), so the
+  ~20% excess seen with 20 repeats was sampling noise. Lesson: repeats are correlated across models
+  (same calibration rows), so agreement between models is not independent evidence.
+
 ## Open questions
 
-- Colab: upload data files manually (current notebook) or download from UCI? — manual for now
+- Colab: upload data files manually (current notebook) or download from UCI? — manual (decided)
+- Why is TabPFN robust to test-time noise on Wine but not on Adult? Needs more datasets.

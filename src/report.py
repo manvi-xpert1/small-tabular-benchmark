@@ -2,7 +2,7 @@
 Turn the raw results CSV into summary tables and plots.
 
 Run from the project folder:
-    python -m src.report                       (uses results/tables/raw_results.csv)
+    python -m src.report                       (classic + TabPFN results combined)
     python -m src.report --raw results/tables/raw_results_quick.csv --tag quick
 
 Outputs:
@@ -31,6 +31,22 @@ STYLE = {
     "gradient_boosting":   dict(color="#1baf7a", marker="^", label="Gradient boosting"),
     "tabpfn":              dict(color="#eda100", marker="D", label="TabPFN"),
 }
+
+
+def load_results(raw_path=None):
+    """
+    Read results. By default: classic-model results (raw_results.csv) plus, if present,
+    TabPFN results from Colab (raw_results_tabpfn.csv), combined into one table.
+    """
+    if raw_path is not None:
+        return pd.read_csv(raw_path)
+    raw = pd.read_csv(config.TABLES_DIR / "raw_results.csv")
+    tabpfn_path = config.TABLES_DIR / "raw_results_tabpfn.csv"
+    if tabpfn_path.exists():
+        tab = pd.read_csv(tabpfn_path)
+        tab = tab[tab["model"] == "tabpfn"]              # keep only TabPFN rows
+        raw = pd.concat([raw[raw["model"] != "tabpfn"], tab], ignore_index=True)
+    return raw
 
 
 def summarise(raw):
@@ -136,12 +152,13 @@ def plot_metric_vs_noise(raw, ds, metric, ylabel, out, target=None):
 
 def main():
     parser = argparse.ArgumentParser(description="Summarise results and draw plots.")
-    parser.add_argument("--raw", default=str(config.TABLES_DIR / "raw_results.csv"))
+    parser.add_argument("--raw", default=None,
+                        help="one results CSV; default = classic + TabPFN files combined")
     parser.add_argument("--tag", default="", help="suffix for output file names")
     args = parser.parse_args()
     tag = f"_{args.tag}" if args.tag else ""
 
-    raw = pd.read_csv(args.raw)
+    raw = load_results(args.raw)
     config.TABLES_DIR.mkdir(parents=True, exist_ok=True)
     config.FIGURES_DIR.mkdir(parents=True, exist_ok=True)
 

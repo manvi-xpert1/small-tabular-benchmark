@@ -28,7 +28,7 @@ import pandas as pd
 from scipy.stats import beta
 
 from src import config
-from src.report import STYLE
+from src.report import STYLE, load_results
 
 TARGET = 1 - config.ALPHA
 
@@ -42,18 +42,6 @@ def theory_for(n):
     curve = beta(k, c + 1 - k)
     return dict(n=n, n_cal=c, k=k, mean=curve.mean(), sd=curve.std(),
                 low=curve.ppf(0.05), high=curve.ppf(0.95), below_85=curve.cdf(0.85))
-
-
-def load_results():
-    """Classic-model results, plus TabPFN results from Colab if they exist."""
-    raw = pd.read_csv(config.TABLES_DIR / "raw_results.csv")
-    tabpfn_path = config.TABLES_DIR / "raw_results_tabpfn.csv"
-    if tabpfn_path.exists():
-        tab = pd.read_csv(tabpfn_path)
-        tab = tab[tab["model"] == "tabpfn"]              # keep only TabPFN rows
-        raw = raw[raw["model"] != "tabpfn"]
-        raw = pd.concat([raw, tab], ignore_index=True)
-    return raw
 
 
 def compare(raw):

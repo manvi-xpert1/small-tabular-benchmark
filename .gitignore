@@ -20,3 +20,6 @@ __pycache__/
 
 # Secrets (e.g. a TabPFN login token) must never be committed
 .env
+
+# Personal interview-prep notes (kept on this laptop only, not published)
+notes/project_explained.md

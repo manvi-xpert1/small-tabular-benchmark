@@ -1,6 +1,6 @@
 # Small, Noisy Tabular Data: A Benchmark of TabPFN vs Classic Models
 
-**Status:** experiment runs in progress (classic models locally, TabPFN on Colab). Results and write-up to follow.
+**Status:** complete. Full write-up: [`notes/writeup.md`](notes/writeup.md).
 
 ## What this project does
 
@@ -16,6 +16,30 @@ It asks two questions:
    **conformal prediction** (a method that turns any model's output into a *set*
    of possible answers that should contain the true answer a chosen share of the
    time, e.g. 90%).
+
+## Key findings
+
+4 models × 2 datasets × 5 sample sizes (50–1,000 rows) × 20 repeats, each under 7 noise conditions.
+
+1. **TabPFN is the most accurate from n = 250 upwards, but not at n = 50.** On Wine it beats the best
+   classic model in 19–20 of 20 repeats at n ≥ 250 (+2–2.6 accuracy points). At n = 50 there is no gain,
+   and on Adult it is slightly worse than logistic regression.
+2. **TabPFN gives the best probabilities and the smallest 90% answer sets** almost everywhere.
+3. **Conformal theory holds on real data.** Average coverage matched theory in 38 of 40 clean cases, and
+   run-to-run spread matched the Beta-distribution theory, once checked with 200 repeats. An apparent
+   20% excess with 20 repeats was sampling noise, made to look consistent because all models share
+   the same calibration rows.
+4. **Noise only at test time breaks the guarantee, depending on model and dataset.** Models keep
+   coverage only if their answer sets grow with noisy inputs (random forest). Logistic regression stays
+   just as confident and drops to 84–85% coverage. TabPFN does one or the other depending on the dataset.
+5. **Weak spots:** Wine is hard for every model (best accuracy 0.58); at n = 50 the sets contain about
+   3.5 of 5 classes, so the guarantee is not very useful there.
+
+![Wine accuracy vs sample size](results/figures/wine_accuracy_vs_n.png)
+![Adult coverage vs noise](results/figures/adult_coverage_vs_noise.png)
+
+Predictions were written down before the results ([`notes/predictions.md`](notes/predictions.md));
+the write-up reports which held and which did not.
 
 ## Datasets (real, public)
 
@@ -118,6 +142,8 @@ All commands from the project folder.
 | `src/report.py` | summary tables (CSV + Markdown) and plots |
 | `src/coverage_theory.py` | compares measured conformal coverage with the Beta-distribution theory (see `notes/predictions.md`) |
 | `tests/test_pipeline.py` | checks the pieces work (synthetic, TEST-ONLY data) |
+| `notes/predictions.md` | coverage predictions written before the results |
+| `notes/writeup.md` | full write-up: method, results, limitations, references |
 
 ## TabPFN licence note
 
